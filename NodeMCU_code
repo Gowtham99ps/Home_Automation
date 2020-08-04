@@ -1,0 +1,63 @@
+#include <Adafruit_Sensor.h>
+#include <Adafruit_FONA.h>
+#include <Adafruit_MQTT.h>
+#include <Adafruit_MQTT_Client.h>
+#include <Adafruit_MQTT_FONA.h>
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#define BLYNK_PRINT Serial
+char auth[] = "c9faba6f53224ad8b8654dd48fb831db";
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "speed"; //Enter your WIFI Name
+char pass[] = "lelelele";//Enter your WIFI Password
+int flag=0;
+int timeSinceLastRead = 0;
+void setup()
+{
+ // Debug console
+ Serial.begin(115200);
+ pinMode(D5,INPUT);
+ pinMode(D1,OUTPUT);
+ pinMode(D2,OUTPUT);
+ pinMode(D3,OUTPUT);
+ pinMode(D4,OUTPUT);
+
+ digitalWrite(D4,HIGH);
+ digitalWrite(D3,HIGH);
+ digitalWrite(D2,HIGH);
+ digitalWrite(D1,HIGH);
+ Serial.setTimeout(2000);
+
+ WiFi.begin(ssid, pass);
+ Blynk.config(auth);
+}
+BLYNK_WRITE(V3) {
+flag = param.asInt();
+ }
+ int ldrvalue = 0;
+void loop()
+{
+ Blynk.run();
+
+
+if(timeSinceLastRead > 2000) {
+ ldrvalue = digitalRead(D5);
+ if (ldrvalue == 1)
+ {
+ digitalWrite(D2,LOW);
+ }
+ else if ( flag )
+ {
+ digitalWrite(D2,LOW);
+ }
+ else
+ {
+ digitalWrite(D2,HIGH);
+ }
+ timeSinceLastRead = 0;
+ }
+
+ delay(100);
+ timeSinceLastRead += 100;
+}
